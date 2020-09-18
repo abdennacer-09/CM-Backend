@@ -8,12 +8,20 @@ const passport = require('passport');
 const key = require('../config/keys').secret;
 const router = express.Router();
 const Pat = require('../models/patient');
+const Cons = require('../models/consultation');
 //const Sec_Pat = require('../models/sec-pat'); 
 
 //const { check , validationResult } = require('express-validator');
 
 router.get('/signup', (req, res) => {
     res.send('signup');
+});
+
+router.get('/users', async (req, res)=> {
+    const users =  await Sec.find();
+    //const patients =  await Pat.find().populate('secretaires')
+    res.json(users);
+    console.log(users);
 });
 
 /*router.post('/signup', async (req, res, next) => {
@@ -37,10 +45,10 @@ router.get('/signup', (req, res) => {
 });*/
 
 router.post('/signup', (req, res) => {
-    let {nom, prenom, email, password, confirm_password} = req.body
+    let {nom, cin, email,isAdmin , tel, adresse, password, confirm_password} = req.body
     if(password !== confirm_password){
         return res.status(400).json({
-            msg: "Password do not mutch."
+            msg: "Le mot de passe ne correspond pas."
         })
     }
 
@@ -49,7 +57,7 @@ router.post('/signup', (req, res) => {
     }).exec().then(sec => {
         if(sec){
             return res.status(400).json({
-                msg: "Email is already registred."
+                msg: "L'adresse e-mail est déjà utilisée."
             });
         }
     });
@@ -57,9 +65,12 @@ router.post('/signup', (req, res) => {
     // The data is valid new we can register the user
     let newSec = new Sec({
         nom,
-        prenom, 
+        cin, 
         email, 
-        password
+        password,
+        isAdmin,
+        tel,
+        adresse
     });
 
     bcrypt.genSalt(10, (err, salt) => {
@@ -69,18 +80,99 @@ router.post('/signup', (req, res) => {
             newSec.save().then(sec => {
                 return res.status(201).json({
                     success: true,
-                    msg: "Secretaire now is registered"
+                    msg: "Le secrétaire est maintenant inscrit"
                 });
             });
         } );
     });
 });
 
+// Modifier User
+router.put('/updateUser/:userId' , (req,res) => {
+
+    const ID = req.params.userId;
+    const UpdatedUser = {
+        nom: req.body.nom,
+        cin: req.body.cin,
+        email: req.body.email,
+        adresse: req.body.adresse,
+        tel: req.body.tel,
+        isAdmin: req.body.isAdmin
+    }
+
+    /*Sec.findOne({
+        email: req.body.email
+    }).exec().then(sec => {
+        if(sec){
+            return res.status(400).json({
+                msg: "Email is already registred."
+            });
+        }
+    });*/
+
+    Sec.updateOne( {_id : ID} , {$set : UpdatedUser} , (err, result)=>{
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+            return;
+        }
+        console.log(result);
+        res.status(500).json(result);
+    });
+
+});
+
+// Modifier Password
+router.put('/updatePass/:userId' , (req,res) => {
+
+    const ID = req.params.userId;
+    const UpdatedPass = {
+        password: req.body.password,
+    }
+
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(UpdatedPass.password, salt, (err, hash) => {
+            if(err) res.send(err);
+            UpdatedPass.password = hash;
+            Sec.updateOne( {_id : ID} , {$set : UpdatedPass} , (err, result)=>{
+                if(err){
+                    console.log(err);
+                    res.status(500).json({
+                        error: err
+                    });
+                    return;
+                }
+                console.log(result);
+                res.status(500).json(result);
+            });
+        } );
+    });
+
+});
+
+//Supprimer User
+router.delete('/deleteUser/:userId', (req,res,next) => {
+    const ID = req.params.userId;
+    Sec.deleteOne({ _id : ID },(err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error : next(err)
+            });
+            return;
+        }
+        console.log(result);
+        res.status(500).json(result);
+    })
+});
+
 router.post('/login', (req,res) => {
     Sec.findOne({ email: req.body.email }).then(sec => {
         if(!sec){
             return res.status(404).json({
-                msg: "Email is not found",
+                msg: "L'e-mail est introuvable",
                 success: false
             });
         }
@@ -91,8 +183,11 @@ router.post('/login', (req,res) => {
                 const payload = {
                     _id: sec._id,
                     nom: sec.nom,
-                    prenom: sec.prenom,
-                    email: sec.email
+                    cin: sec.cin,
+                    email: sec.email,
+                    isAdmin: sec.isAdmin,
+                    tel: sec.tel,
+                    adresse: sec.adresse
                 }
                 jwt.sign(payload, key,{
                     expiresIn: 604800
@@ -101,12 +196,12 @@ router.post('/login', (req,res) => {
                         success: true,
                         user: sec,
                         token: `Bearer ${token}`,
-                        msg: "youare now logged "
+                        msg: "vous êtes maintenant connecté "
                     });
                 });
             }else{
                 return res.status(404).json({
-                    msg: "Password is not correct",
+                    msg: "Le mot de passe n'est pas correct",
                     success: false
                 });
             }

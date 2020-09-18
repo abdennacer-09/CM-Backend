@@ -25,15 +25,21 @@ router.get('/countCons', async (req, res)=> {
     })
 });
 
+router.get('/consAjourdui', async (req, res)=> {
+    // var nowDate = new Date();
+     //var dateWitTm = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate(); 
+    const consultations =  await Cons.find({'date': {"$lte": new Date()}}).populate('patient');
+     //const patients =  await Pat.find().populate('secretaires')
+    res.json(consultations)
+    console.log(consultations); 
+});
+
 router.post('/:secId/addCons', async (req,res) => {
     const { secId } = req.params;
 
     const NewConsultation = new Cons({
         date: req.body.date,
-        type: req.body.type,
         patient: req.body.patient,
-        categorie : req.body.categorie,
-        status : req.body.status
     });
 
     const sec = await Sec.findById(secId);
@@ -51,15 +57,13 @@ router.post('/:secId/addCons', async (req,res) => {
 });
 
 // Modifier Consultation
-router.put('/:secId/updateConsultation/:consId' , (req,res) => {
+router.put('/updateConsultation/:consId' , (req,res) => {
 
     const ID = req.params.consId;
     const UpdatedConsultation = {
         date: req.body.date,
-        type: req.body.type,
         patient: req.body.patient,
-        categorie : req.body.categorie,
-        status : req.body.status
+        
     }
     Cons.updateOne( {_id : ID} , {$set : UpdatedConsultation} , (err, result)=>{
         if(err){
@@ -77,7 +81,7 @@ router.put('/:secId/updateConsultation/:consId' , (req,res) => {
 
 // Supprimer Consultation
 
-router.delete('/:secId/deleteConsultation/:consId', (req,res) => {
+router.delete('/deleteConsultation/:consId', (req,res) => {
     const ID = req.params.consId;
     Cons.deleteOne({ _id : ID },(err, result) => {
         if(err){

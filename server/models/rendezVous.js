@@ -15,8 +15,7 @@ const RdvSchema = new Schema ({
     secretaire:{
         type: Schema.Types.ObjectId,
         ref: 'secretaire'
-    }
-    
+    },
 });
 
 module.exports = mongoose.model('RendezVous', RdvSchema);

@@ -2,15 +2,21 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const MedicSchema = new Schema ({
-    midicaux :{
+    hta :{
         type: String
     },
-    rmqMdc :{
+    diabete :{
         type: String
     },
-    consultation:{
+    allergie :{
+        type: String
+    },
+    autresMdc :{
+        type: String
+    },
+    patient:{
         type: Schema.Types.ObjectId,
-        ref: 'Consultation'
+        ref: 'Patient'
     }
     
 });

@@ -2,10 +2,22 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ApprSchema = new Schema ({
-    appareil:{
+    abdominal :{
         type: String
     },
-    rmqAppr :{
+    pleuropulmonaire :{
+        type: String
+    },
+    cardiovasculaire :{
+        type: String
+    },
+    gynecologique :{
+        type: String
+    },
+    osteoarticulaire :{
+        type: String
+    },
+    reste :{
         type: String
     },
     consultation:{

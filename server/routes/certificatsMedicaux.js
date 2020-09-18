@@ -14,7 +14,7 @@ router.get('/', async (req, res)=> {
     console.log(CrtMdc);
 });
 
-router.get('/countCertMdc', async (req, res)=> {
+router.get('/countCertMdc', async (req, res)=> { 
     CrtMdc.count({}, function(err, result){
         if(err){
             res.send(err)

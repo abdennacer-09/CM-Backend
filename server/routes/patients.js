@@ -11,7 +11,7 @@ router.get('/addPatient', (req, res) => {
     res.send('Add patients');
 });
 
-router.get('/countPat/:secId', async (req, res)=> {
+router.get('/countPat', async (req, res)=> {
     Pat.count({}, function(err, result){
         if(err){
             res.send(err)
@@ -22,14 +22,14 @@ router.get('/countPat/:secId', async (req, res)=> {
     })
 });
 
-router.get('/:secId', async (req, res)=> {
+router.get('/', async (req, res)=> {
     const patients =  await Pat.find();
     //const patients =  await Pat.find().populate('secretaires')
     res.json(patients);
     console.log(patients);
 });
 
-router.get('/:secId/findPatient/:id', async(req,res)=>{
+router.get('/findPatient/:id', async(req,res)=>{
     const {id} = req.params;
     const patient = await Pat.findById(id);
     res.json(patient)
@@ -50,7 +50,7 @@ router.post('/:secId/addPatient', async (req, res, next) => {
         tel: req.body.tel,
         mituelle : req.body.mituelle,
         adresse : req.body.adresse,
-        profession : req.body.profession,
+        profession : req.body.profession, 
         age : req.body.age,
         sitFam : req.body.sitFam,
         dateNaissance : req.body.dateNaissance,
@@ -66,7 +66,7 @@ router.post('/:secId/addPatient', async (req, res, next) => {
 });
 
 // Modifier Patient
-router.put('/:secId/updatePatient/:patId' , (req,res) => {
+router.put('/updatePatient/:patId' , (req,res) => {
 
     const ID = req.params.patId;
     const UpdatedPatient = {
@@ -100,7 +100,7 @@ router.put('/:secId/updatePatient/:patId' , (req,res) => {
 
 // Supprimer Patient
 
-router.delete('/:secId/deletePatient/:patId', (req,res,next) => {
+router.delete('/deletePatient/:patId', (req,res,next) => {
     const ID = req.params.patId;
     Pat.deleteOne({ _id : ID },(err, result) => {
         if(err){
@@ -115,7 +115,7 @@ router.delete('/:secId/deletePatient/:patId', (req,res,next) => {
     })
 });
 
-router.delete('/:secId/deleteRdvPat/:patId',(req,res) => {
+router.delete('/deleteRdvPat/:patId',(req,res) => {
     const IDpat = req.params.patId;
     Rdv.deleteMany({ patient : IDpat },(err, result) => {
         if(err){
@@ -131,7 +131,7 @@ router.delete('/:secId/deleteRdvPat/:patId',(req,res) => {
 
 });
 
-router.delete('/:secId/deleteConsPat/:patId',(req,res) => {
+router.delete('/deleteConsPat/:patId',(req,res) => {
     const IDpat = req.params.patId;
     Cons.deleteMany({ patient : IDpat },(err, result) => {
         if(err){

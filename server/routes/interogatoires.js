@@ -19,7 +19,7 @@ router.post('/addInterog', async (req,res) => {
     const NewInterogatoire = new Interog({
         motif: req.body.motif,
         rmqMotif: req.body.rmqMotif,
-        consultation : req.body.consultation
+        patient : req.body.patient
     });
 
     await NewInterogatoire.save((err, resualt) => {
@@ -40,7 +40,6 @@ router.put('/updateInterog/:interogId' , (req,res) => {
     const UpdatedInterogatoire = {
         motif: req.body.motif,
         rmqMotif: req.body.rmqMotif,
-        consultation : req.body.consultation
     }
     Interog.updateOne( {_id : ID} , {$set : UpdatedInterogatoire} , (err, resualt)=>{
         if(err){
@@ -51,7 +50,7 @@ router.put('/updateInterog/:interogId' , (req,res) => {
             return;
         }
         console.log(resualt);
-        res.status(500).json(resualt);
+        res.status(500).json(Interog);
     });
 
 });
@@ -69,7 +68,7 @@ router.delete('/deleteInterog/:interogId', (req,res) => {
             return;
         }
         console.log(result);
-        res.status(500).json(result);
+        res.status(500).json(Interog);
     })
 });
 

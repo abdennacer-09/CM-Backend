@@ -14,6 +14,32 @@ router.get('/', async (req, res)=> {
     console.log(examensParaCliniques);
 });
 
+router.get('/Bio', async (req, res)=> {
+    const examensBiologies =  await Bio.find();
+    res.json(examensBiologies);
+    console.log(examensBiologies);
+});
+
+router.get('/FilterBio', async (req, res)=> {
+    const examensBiologies =  await Bio.find().populate('consultation').populate('patient');
+    res.json(examensBiologies);
+    console.log(examensBiologies);
+});
+
+router.get('/FilterBio/:idPat', async (req, res)=> {
+    const ID = req.params.idPat;
+    const cons = await Cons.find({patient : ID});
+    const examensBiologies =  await Bio.find({consultation : cons });
+    res.json(examensBiologies);
+    console.log(examensBiologies);
+});
+
+router.get('/Radio', async (req, res)=> {
+    const examensRadiologie =  await Radio.find();
+    res.json(examensRadiologie);
+    console.log(examensRadiologie);
+});
+
 router.post('/addExamParaCln', async (req,res) => {
 
     const NewExamParaClinique = new ExmParCln({
@@ -39,8 +65,26 @@ router.post('/addExamParaCln', async (req,res) => {
 router.post('/addExamBiologie', async (req,res) => {
 
     const NewExamBiologie = new Bio({
-        biologie: req.body.biologie,
-        rmqBiologie: req.body.rmqBiologie,
+        NfsPq: req.body.NfsPq,
+        TSHus: req.body.TSHus,
+        T3: req.body.T3,
+        T4: req.body.T4,
+        Glycemie: req.body.Glycemie,
+        HBGA1c: req.body.HBGA1c,
+        LDL: req.body.LDL,
+        HDL: req.body.HDL,
+        TG: req.body.TG,
+        CT: req.body.CT,
+        PSA: req.body.PSA,
+        TP: req.body.TP,
+        TCK: req.body.TCK,
+        INR: req.body.INR,
+        Groupage: req.body.Groupage,
+        TPHA: req.body.TPHA,
+        VDRL: req.body.VDRL,
+        SerologieToxo: req.body.SerologieToxo,
+        SerologieRub: req.body.SerologieRub,
+        AutresBio : req.body.AutresBio,
         consultation : req.body.consultation
     });
 
@@ -54,6 +98,64 @@ router.post('/addExamBiologie', async (req,res) => {
     res.status(201).json(NewExamBiologie);
 
 });
+
+// Supprimer Examen Biologie
+
+router.delete('/deleteExamBio/:BioId', (req,res) => {
+    const ID = req.params.BioId;
+    Bio.deleteOne({ _id : ID },(err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error : err
+            });
+            return;
+        }
+        console.log(result);
+        res.status(500).json(result);
+    })
+});
+
+// Modifier Examen Biologie
+router.put('/updateExamenBio/:BioId' , (req,res) => {
+
+    const ID = req.params.BioId;
+    const UpdatedExamBio = {
+        NfsPq: req.body.NfsPq,
+        TSHus: req.body.TSHus,
+        T3: req.body.T3,
+        T4: req.body.T4,
+        Glycemie: req.body.Glycemie,
+        HBGA1c: req.body.HBGA1c,
+        LDL: req.body.LDL,
+        HDL: req.body.HDL,
+        TG: req.body.TG,
+        CT: req.body.CT,
+        PSA: req.body.PSA,
+        TP: req.body.TP,
+        TCK: req.body.TCK,
+        INR: req.body.INR,
+        Groupage: req.body.Groupage,
+        TPHA: req.body.TPHA,
+        VDRL: req.body.VDRL,
+        SerologieToxo: req.body.SerologieToxo,
+        SerologieRub: req.body.SerologieRub,
+        AutresBio : req.body.AutresBio
+    }
+    Bio.updateOne( {_id : ID} , {$set : UpdatedExamBio} , (err, result)=>{
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+            return;
+        }
+        console.log(result);
+        res.status(500).json(result);
+    });
+
+});
+
 
 //add exam Radlogie
 router.post('/addExamRadiologie', async (req,res) => {
@@ -72,6 +174,45 @@ router.post('/addExamRadiologie', async (req,res) => {
         console.log(resualt);
     });
     res.status(201).json(NewExamRadiologie);
+
+});
+
+// Supprimer Examen Radiologie
+
+router.delete('/deleteExamRdio/:RadioId', (req,res) => {
+    const ID = req.params.RadioId;
+    Radio.deleteOne({ _id : ID },(err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error : err
+            });
+            return;
+        }
+        console.log(result);
+        res.status(500).json(Radio);
+    })
+});
+
+// Modifier Examen Radiologie
+router.put('/updateExamenRadio/:RadioId' , (req,res) => {
+
+    const ID = req.params.RadioId;
+    const UpdatedExamRadio = {
+        radiologie: req.body.radiologie,
+        rmqRadio: req.body.rmqRadio,
+    }
+    Radio.updateOne( {_id : ID} , {$set : UpdatedExamRadio} , (err, result)=>{
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+            return;
+        }
+        console.log(result);
+        res.status(500).json(UpdatedExamRadio);
+    });
 
 });
 

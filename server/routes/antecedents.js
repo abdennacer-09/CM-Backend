@@ -9,7 +9,7 @@ const Chirg = require('../models/chirurgicaux');
 const Obst = require('../models/obstetricaux');
 
 router.get('/', async (req, res)=> {
-    const antecedents =  await Antc.find();
+    const antecedents =  await Antc.find(); 
     res.json(antecedents);
     console.log(antecedents);
 });
@@ -18,6 +18,13 @@ router.get('/famil', async (req, res)=> {
     const familias =  await Fam.find();
     res.json(familias);
     console.log(familias);
+});
+
+router.get('/famil/:idPat', async(req, res) => {
+    const ID = req.params.idPat;
+    const fams = await Fam.find({patient : ID});
+    res.json(fams);
+    console.log(fams);
 });
 
 router.get('/medic', async (req, res)=> {
@@ -71,7 +78,7 @@ router.post('/addFamiliaux', async (req, res) =>  {
     const NewFamiliaux = new Fam({
         familiaux: req.body.familiaux,
         rmqFam : req.body.rmqFam,
-        consultation : req.body.consultation
+        patient : req.body.patient
     });
 
     await NewFamiliaux.save((err, result) => {
@@ -127,9 +134,11 @@ router.put('/updateFam/:famId' , (req,res) => {
 //Ajouter Midicaux
 router.post('/addMidicaux', async (req, res) =>  {
     const NewMidicaux = new Medic({
-        midicaux: req.body.midicaux,
-        rmqMdc : req.body.rmqMdc,
-        consultation : req.body.consultation
+        hta: req.body.hta,
+        diabete : req.body.diabete,
+        allergie : req.body.allergie,
+        autresMdc : req.body.autresMdc,
+        patient : req.body.patient
     });
 
     await NewMidicaux.save((err, result) => {
@@ -164,8 +173,10 @@ router.put('/updateMedic/:medicId' , (req,res) => {
 
     const ID = req.params.medicId;
     const UpdatedMedicaux = {
-        medicaux: req.body.medicaux,
-        rmqMdc : req.body.rmqMdc,
+        hta: req.body.hta,
+        diabete : req.body.diabete,
+        allergie : req.body.allergie,
+        autresMdc : req.body.autresMdc
     }
     Medic.updateOne( {_id : ID} , {$set : UpdatedMedicaux} , (err, resualt)=>{
         if(err){
@@ -186,7 +197,7 @@ router.post('/addChirurgicaux', async (req, res) =>  {
     const NewChirurgicaux = new Chirg({
         chirurgicaux: req.body.chirurgicaux,
         rmqChirg : req.body.rmqChirg,
-        consultation : req.body.consultation
+        patient : req.body.patient
     });
 
     await NewChirurgicaux.save((err, result) => {
@@ -216,13 +227,35 @@ router.delete('/deleteChirg/:ChirgId', (req,res) => {
     })
 });
 
+// Modifier Chirurgicaux
+router.put('/updateChirg/:chirgId' , (req,res) => {
+
+    const ID = req.params.chirgId;
+    const UpdatedChirurgicaux = {
+        chirurgicaux: req.body.chirurgicaux,
+        rmqChirg : req.body.rmqChirg,
+    }
+        Chirg.updateOne( {_id : ID} , {$set : UpdatedChirurgicaux} , (err, resualt)=>{
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+            return;
+        }
+        console.log(resualt);
+        res.status(500).json(Chirg);
+    });
+
+});
+
 
 // Ajouter Obstétricaux
 router.post('/addObstetricaux', async (req, res) =>  {
     const NewObstetricaux = new Obst({
         Obstetricaux: req.body.Obstetricaux,
         rmqObst : req.body.rmqObst,
-        consultation : req.body.consultation
+        patient : req.body.patient
     });
 
     await NewObstetricaux.save((err, result) => {
@@ -233,6 +266,45 @@ router.post('/addObstetricaux', async (req, res) =>  {
         console.log(result);
         res.status(201).json(NewObstetricaux);
     });
+});
+
+// Supprimer Obstétricaux
+
+router.delete('/deleteObst/:ObstId', (req,res) => {
+    const ID = req.params.ObstId;
+    Obst.deleteOne({ _id : ID },(err, result) => {
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error : err
+            });
+            return;
+        }
+        console.log(result);
+        res.status(500).json(Obst);
+    })
+});
+
+// Modifier Obstétricaux
+router.put('/updateObst/:obstId' , (req,res) => {
+
+    const ID = req.params.obstId;
+    const UpdatedObstétricaux = {
+        Obstetricaux: req.body.Obstetricaux,
+        rmqObst : req.body.rmqObst,
+    }
+        Obst.updateOne( {_id : ID} , {$set : UpdatedObstétricaux} , (err, resualt)=>{
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+            return;
+        }
+        console.log(resualt);
+        res.status(500).json(Obst);
+    });
+
 });
 
 

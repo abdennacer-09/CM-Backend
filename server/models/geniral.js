@@ -2,15 +2,33 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const GenrSchema = new Schema ({
-    geniral :{
+    ta :{
         type: String
     },
-    rmqGeneral :{
+    poids :{
         type: String
     },
-    consultation:{
+    gpp :{
+        type: String
+    },
+    hu :{
+        type: String
+    },
+    fc :{
+        type: String
+    },
+    gaj :{
+        type: String
+    },
+    temperature :{
+        type: String
+    },
+    omi :{
+        type: String
+    },
+    patient:{
         type: Schema.Types.ObjectId,
-        ref: 'Consultation'
+        ref: 'Patient'
     }
     
 });

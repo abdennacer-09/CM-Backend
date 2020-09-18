@@ -8,9 +8,9 @@ const ObstSchema = new Schema ({
     rmqObst:{
         type: String
     },
-    consultation:{
+    patient:{
         type: Schema.Types.ObjectId,
-        ref: 'Consultation'
+        ref: 'Patient'
     }
     
 });

@@ -8,7 +8,7 @@ const CertificatMedicSchema = new Schema ({
     dateFin :{
         type: Date
     },
-    duree:{
+    duree:{ 
         type: Number
     },
     consultation:{

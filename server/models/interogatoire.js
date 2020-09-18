@@ -8,9 +8,9 @@ const InterogSchema = new Schema ({
     rmqMotif :{
         type: String
     },
-    consultation:{
+    patient:{
         type: Schema.Types.ObjectId,
-        ref: 'Consultation'
+        ref: 'Patient'
     }
     
 });

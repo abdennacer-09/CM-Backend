@@ -4,13 +4,23 @@ const Sec = require('../models/secretaire');
 const router = express.Router();
 const Pat = require('../models/patient');
 const Rdv = require('../models/rendezVous');
+const Cons = require('../models/consultation');
 
 
 router.get('/', async (req, res)=> {
     const rdvs =  await Rdv.find().populate('patient');
     //const patients =  await Pat.find().populate('secretaires')
     res.json(rdvs)
-    console.log(rdvs);
+    console.log(rdvs); 
+});
+
+router.get('/rdvAujourdui', async (req, res)=> {
+   // var nowDate = new Date();
+    //var dateWitTm = nowDate.getFullYear()+'/'+(nowDate.getMonth()+1)+'/'+nowDate.getDate(); 
+    const rdvs =  await Rdv.find({'date': {"$gte": new Date()}}).populate('patient');
+    //const patients =  await Pat.find().populate('secretaires')
+    res.json(rdvs)
+    console.log(rdvs); 
 });
 
 
@@ -40,7 +50,7 @@ router.post('/:secId/addRdv', async (req,res) => {
 
 //Modifier le Rendrez vous
 
-router.put('/:secId/updateRdv/:rdvId' , (req,res) => {
+router.put('/updateRdv/:rdvId' , (req,res) => {
 
     const ID = req.params.rdvId;
     const UpdatedRDV = {
@@ -66,7 +76,7 @@ router.put('/:secId/updateRdv/:rdvId' , (req,res) => {
 
 // Supprimer Rendez vous
 
-router.delete('/:secId/deleteRdv/:rdvId', (req,res) => {
+router.delete('/deleteRdv/:rdvId', (req,res) => {
     const ID = req.params.rdvId;
     Rdv.deleteOne({ _id : ID },(err, result) => {
         if(err){
